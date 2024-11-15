@@ -1,0 +1,4 @@
+.title {
+  @apply text-lg font-semibold;
+  font-weight: 400;
+}

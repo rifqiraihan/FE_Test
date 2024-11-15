@@ -1,0 +1,11 @@
+.datagrid {
+  @apply w-full py-6;
+}
+
+.datagrid__container {
+  @apply flex h-full;
+}
+
+.datagrid__content {
+  @apply flex-grow;
+}
