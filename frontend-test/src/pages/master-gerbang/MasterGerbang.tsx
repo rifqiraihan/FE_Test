@@ -2,6 +2,7 @@ import { Add, Search } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Button, InputAdornment, makeStyles, TextField, Typography } from '@mui/material'
 import axios from 'axios';
+import { enqueueSnackbar } from 'notistack';
 import React from 'react'
 import { createGerbang, deleteGerbang, editGerbang, getAllGerbangs } from '../../api/gerbangApi';
 import { IGerbang, IGerbangApiResponse } from '../../interfaces/gerbang';
@@ -82,12 +83,13 @@ const MasterData = () => {
   
       if (response.status === true) {
         setLoading(false);
-        console.log('Gerbang data successfully saved:', response.message);
+        enqueueSnackbar(response.message, { variant: 'success' });
         handleClose();
         fetchGerbangs();
       } else {
         setLoading(false);
         console.error('Unexpected response format:', response);
+        enqueueSnackbar(response.message, { variant: 'error' });
       }
     } catch (error) {
       console.error('Error saving Gerbang data:', error);
@@ -107,9 +109,9 @@ const MasterData = () => {
 
   return (
     <div>
-      <h1 className="text-xl font-bold mb-8">Master Gerbang</h1>
+      <h1 className="text-2xl font-bold mb-10">Master Gerbang</h1>
       <div className='flex flex-col md:flex-row justify-between items-end md:items-center mb-4'>
-        <TextField
+          <TextField
                 placeholder="Search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}

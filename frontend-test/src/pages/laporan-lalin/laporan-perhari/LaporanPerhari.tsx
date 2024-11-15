@@ -1,5 +1,5 @@
-import { CalendarToday, FileDownload, Search } from '@mui/icons-material';
-import { Button, InputAdornment, TextField, Typography } from '@mui/material'
+import { CalendarToday, FileDownload, Filter, FilterAlt, KeyboardArrowDown, Search } from '@mui/icons-material';
+import { Button, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material'
 import { DataGrid, GridApi, GridColDef, GridToolbar, GridToolbarExport, useGridApiRef } from '@mui/x-data-grid';
 import { DatePicker, DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
@@ -39,6 +39,7 @@ const LaporanPerhari = () => {
 
 const [data, setData] = useState<TrafficData[]>(initialData);
   const [search, setSearch] = useState<string>('');
+  const [showFilter, setShowFilter] = useState<boolean>(true);
   const [date, setDate] = useState<Moment | null>(null);
   const apiRef = useGridApiRef();
 
@@ -94,19 +95,29 @@ const [data, setData] = useState<TrafficData[]>(initialData);
 
   
   return (
-    <div className="bg-gray-100 p-8 min-h-screen">
-      <div className="container mx-auto bg-white p-6 rounded-lg shadow-lg">
-        <h1 className="text-xl font-bold mb-4">Laporan Lalin Per Hari</h1>
-        <div className="mb-6">
-          <div className="flex space-x-4 mb-4">
-            <div className="flex items-center border border-gray-300 rounded-lg p-2 w-1/2">
-              <Search className="text-gray-400 mr-2" />
-              <TextField
+      <div>
+        <h1 className="text-2xl font-bold mb-10">Laporan Lalin Per Hari</h1>
+        {showFilter ? (
+        <div className="mb-10 border-2 shadow-xl p-6" style={{borderRadius:'12px'}}>
+          <div className='flex flex-row justify-between items-center mb-2'>
+            <div/>  
+            <Tooltip title='Hide Filter'>
+            <IconButton onClick={()=>setShowFilter(false)}>
+              <KeyboardArrowDown/>
+            </IconButton>
+            </Tooltip>
+          </div>
+          <div className="flex space-x-4 mb-2 w-1/2">
+          <TextField
                 placeholder="Search"
                 value={search}
-                size='small'
                 onChange={(e) => setSearch(e.target.value)}
-                fullWidth
+                className='w-full !mb-2 !md:!mb-0'
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '12px',
+                  },
+                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -115,26 +126,51 @@ const [data, setData] = useState<TrafficData[]>(initialData);
                   ),
                 }}
               />
-            </div>
-            <div className="p-2 w-1/2">
+            <div className=" w-full">
               <LocalizationProvider dateAdapter={AdapterMoment}>
                 <DesktopDatePicker
                   value={date}
                   onChange={(newValue) => setDate(newValue)}
-                //   renderInput={(params) => <TextField {...params} />}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '12px',
+                    },
+                  }}
                 />
               </LocalizationProvider>
             </div>
           </div>
           <div className="flex space-x-4">
-            <Button variant="contained" color="primary" onClick={handleFilter}>
+            <Button 
+               variant="contained"
+               className="!p-3 !rounded-full hover:!bg-blue-500"
+               style={{backgroundColor:'rgb(25, 118, 210)', minWidth:'120px'}}
+              onClick={handleFilter}>
               Filter
             </Button>
-            <Button variant="outlined" color="secondary" onClick={handleReset}>
+            <Button 
+               variant="outlined"
+               className='!rounded-full !py-3 !text-black !border-gray-500'
+               style={{ minWidth:'120px'}}
+              onClick={handleReset}
+            >
               Reset
             </Button>
           </div>
         </div>
+        ):(
+            <Button 
+               variant="outlined"
+               className='!rounded-full !py-3 !text-black !border-gray-500 !mb-6'
+               style={{ minWidth:'120px'}}
+              onClick={()=>setShowFilter(true)}
+              startIcon={
+                <FilterAlt/>
+              }
+            >
+              Show Filter
+            </Button>
+        )}
         <div className="mb-6">
           <div className="flex space-x-4 overflow-x-auto">
             <Button variant="contained" onClick={() => handlePaymentFilter('Tunai')}>
@@ -176,7 +212,6 @@ const [data, setData] = useState<TrafficData[]>(initialData);
             />
         </div>
       </div>
-    </div>
   )
 }
 

@@ -11,10 +11,6 @@ import MasterGerbang from './pages/master-gerbang/MasterGerbang';
 const App: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const handleDrawerToggle = () => {
-    setDrawerOpen(!drawerOpen);
-  };
-
   return (
    <Router>
       <Routes>
@@ -25,7 +21,7 @@ const App: React.FC = () => {
             <div className="flex flex-col relative">
               <Header onOpenDrawer={() => setDrawerOpen(true)} />
               <DrawerMenu open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-              <main className="flex-grow p-6 my-10 container mx-auto border-2 min-h-screen" style={{borderRadius:'12px'}}>
+              <main className="flex-grow p-8 m-10 w-full md:w-3/4 mx-auto shadow-xl border-2 min-h-screen" style={{borderRadius:'12px'}}>
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/laporan/per-hari" element={<LaporanPerhari />} />
