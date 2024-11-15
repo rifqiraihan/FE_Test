@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, Button, Backdrop, CircularProgress, Divider } from '@mui/material';
-import PersonIcon from '@mui/icons-material/Person';
+import { AppBar, Toolbar, IconButton, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, Button, Backdrop, CircularProgress, Divider } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { AccountCircle, AccountCircleOutlined, PersonOutline } from '@mui/icons-material';
+import { AccountCircleOutlined } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 

@@ -27,18 +27,18 @@ const LaporanPerhari = () => {
   const apiRef = useGridApiRef();
 
 
-  const fetchLalins = async () => {
+  const fetchLalins = React.useCallback(async () => {
     try {
-        const formattedDate = moment(date).format('YYYY-MM-DD');
-        const response = await getLalins(formattedDate);
-        setData(response.data.rows.rows);
-        setFilteredData(response.data.rows.rows);
+      const formattedDate = moment(date).format('YYYY-MM-DD');
+      const response = await getLalins(formattedDate);
+      setData(response.data.rows.rows);
+      setFilteredData(response.data.rows.rows);
     } catch (err) {
-        enqueueSnackbar('Failed to Fetch Lalins', { variant: 'error' });
+      enqueueSnackbar('Failed to Fetch Lalins', { variant: 'error' });
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  }, [date]);
 
 const handleFilter = () => {
   const filteredData = data.filter((item) => {
@@ -163,9 +163,8 @@ const transformedData = filteredData.map((item, index) => {
 
 
 
-  React.useEffect(() => {
-    fetchLalins();
-
+React.useEffect(() => {
+  fetchLalins();
 }, []);
 
   

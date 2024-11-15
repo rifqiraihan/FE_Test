@@ -18,7 +18,7 @@ const MasterData = () => {
   const [search, setSearch] = React.useState<string>('');
   const [filteredData, setFilteredData] = React.useState<IGerbang[]>([]);
 
-  const handleFilter = () => {
+  const handleFilter = React.useCallback(() => {
     const filtered = data.filter(
       (item) =>
         item.id.toString().toLowerCase().includes(search.toLowerCase()) ||
@@ -27,7 +27,7 @@ const MasterData = () => {
         item.NamaCabang.toLowerCase().includes(search.toLowerCase())
     );
     setFilteredData(filtered);
-  };
+  }, [data, search]);
 
   const handleAdd = () => {
     setFormType('Add New')
@@ -103,7 +103,7 @@ const MasterData = () => {
 
   React.useEffect(() => {
     handleFilter();
-  }, [search]);
+  }, [search, handleFilter]);
 
   return (
     <div>
