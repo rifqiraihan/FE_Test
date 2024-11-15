@@ -4,7 +4,7 @@ import { Box, IconButton, Tooltip } from '@mui/material';
 import { IGerbang } from '../../../../interfaces/gerbang';  // Import your interface
 import { IDataGridProps } from './interfaces/interface';
 import './Datagrid.css'
-import { Delete, Edit, RemoveRedEye, Search } from '@mui/icons-material';
+import { Delete, Edit, RemoveRedEye } from '@mui/icons-material';
 
 
 

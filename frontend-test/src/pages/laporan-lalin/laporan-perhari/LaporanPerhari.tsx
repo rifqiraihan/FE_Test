@@ -8,6 +8,8 @@ import { enqueueSnackbar } from 'notistack';
 import React, { useState } from 'react'
 import { getLalins } from '../../../api/lalinApi';
 import { ILalin } from '../../../interfaces/lalin';
+import { LoadingButton } from '@mui/lab';
+
 import './LaporanPerhari.css'
 
 
@@ -17,8 +19,8 @@ const LaporanPerhari = () => {
   const [filteredData, setFilteredData] = useState<ILalin[]>([]);
   const [search, setSearch] = useState<string>('');
   const [showFilter, setShowFilter] = useState<boolean>(true);
-  const [date, setDate] = useState<Moment | null>(moment());
-  const [loading, setLoading] = React.useState<boolean>(true);
+  const [date, setDate] = useState<Moment | null>(moment('2023-11-01'));
+  const [loading, setLoading] = useState<boolean>(true);
   const [currentPaymentMethod, setCurrentPaymentMethod] = useState<string>('Keseluruhan');
 
 
@@ -60,7 +62,7 @@ const handleFilter = () => {
 
   const handleReset = () => {
     setSearch('');
-    setDate(null);
+    setDate(moment());
     setFilteredData(data);
   };
 
@@ -163,6 +165,7 @@ const transformedData = filteredData.map((item, index) => {
 
   React.useEffect(() => {
     fetchLalins();
+
 }, []);
 
   
@@ -213,21 +216,23 @@ const transformedData = filteredData.map((item, index) => {
             </div>
           </div>
           <div className="flex space-x-4">
-            <Button 
+            <LoadingButton 
+              loading={loading}
                variant="contained"
                className="!p-3 !rounded-full hover:!bg-blue-500"
                style={{backgroundColor:'rgb(25, 118, 210)', minWidth:'120px'}}
               onClick={handleFilter}>
               Filter
-            </Button>
-            <Button 
+            </LoadingButton>
+            <LoadingButton
+              loading={loading} 
                variant="outlined"
                className='!rounded-full !py-3 !text-black !border-gray-500'
                style={{ minWidth:'120px'}}
               onClick={handleReset}
             >
               Reset
-            </Button>
+            </LoadingButton>
           </div>
         </div>
         ):(
@@ -245,8 +250,10 @@ const transformedData = filteredData.map((item, index) => {
         )}
          
         <div className="my-6">
+          {filteredData.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', justifyItems: 'end', marginTop: '20px',  marginBottom: '20px' }}>
-            <Button 
+            <LoadingButton
+              loading={loading} 
               variant="contained"
               className="!p-3 !rounded-full hover:!bg-blue-500"
               style={{backgroundColor:'rgb(25, 118, 210)', minWidth:'120px'}}
@@ -254,8 +261,11 @@ const transformedData = filteredData.map((item, index) => {
               startIcon={<FileDownload />}
             >
               Export
-            </Button>
+            </LoadingButton>
           </div>
+          )}
+
+        {filteredData.length > 0 && (
           <div className="flex flex-row gap-4 overflow-x-auto border-2 rounded-full p-2 max-w-fit">
           <Button
             style={{
@@ -355,6 +365,7 @@ const transformedData = filteredData.map((item, index) => {
 
            
           </div>
+        )}
         </div>
         <div className="overflow-x-auto">
         <DataGrid

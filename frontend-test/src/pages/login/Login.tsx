@@ -46,11 +46,11 @@ const Login: React.FC = () => {
   return (
 <div className="flex h-screen">
       {/* Left side: Login form */}
-      <div className="flex flex-col justify-center items-center w-1/2 bg-white p-8">
+      <div className="flex flex-col justify-center items-center w-full md:w-1/2 bg-white p-8">
         <div className="mb-8">
             <img src={require('../../assets/img/jasamarga-logo.png')} alt="App Logo" className="h-24 w-auto mr-2" />
         </div>
-        <form onSubmit={handleSubmit} className="w-1/2">
+        <form onSubmit={handleSubmit} className="w-full md:w-1/2">
             <div className="mb-4">
             <Typography className="!font-bold !text-black mb-1">Username</Typography>
             <TextField
@@ -109,7 +109,7 @@ const Login: React.FC = () => {
       </div>
 
       <div 
-      className="w-1/2 flex items-center justify-center relative"
+      className="w-1/2  items-center justify-center relative hidden md:flex"
       >
          <img 
             src={require('../../assets/img/bg-jasamarga.png')} 

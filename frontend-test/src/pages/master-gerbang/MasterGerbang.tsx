@@ -71,9 +71,9 @@ const MasterData = () => {
       
       let response
 
-      if (formType == 'Add New'){
+      if (formType === 'Add New'){
          response = await createGerbang(value);
-      } else if (formType == 'Edit'){
+      } else if (formType === 'Edit'){
         response = await editGerbang(value);
       } else {
         response = await deleteGerbang(value);
@@ -98,7 +98,7 @@ const MasterData = () => {
 
   React.useEffect(() => {
     fetchGerbangs();
-
+    
   }, []);
 
   React.useEffect(() => {

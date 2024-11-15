@@ -6,10 +6,29 @@ import Dashboard from './pages/dashboard/Dashboard';
 import LaporanPerhari from './pages/laporan-lalin/laporan-perhari/LaporanPerhari';
 import Login from './pages/login/Login';
 import MasterGerbang from './pages/master-gerbang/MasterGerbang';
+import { enqueueSnackbar } from 'notistack';
+
 
 
 const App: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  React.useEffect(() => {
+    const currentPath = window.location.pathname;
+
+    console.log('Current Path:', currentPath);
+
+      
+    const token = localStorage.getItem('token');
+    if (currentPath !== '/login'){
+      if (!token) {
+        enqueueSnackbar('Please Login First', { variant: 'error' });
+        window.location.href = '/login';
+      }
+  }
+
+
+  }, []);
 
   return (
    <Router>
@@ -25,7 +44,7 @@ const App: React.FC = () => {
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/laporan/per-hari" element={<LaporanPerhari />} />
-                  <Route path="/master" element={<MasterGerbang />} />
+                  <Route path="/master-gerbang" element={<MasterGerbang />} />
                 </Routes>
               </main>
             </div>
@@ -37,3 +56,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+

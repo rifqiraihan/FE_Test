@@ -1,7 +1,7 @@
 // src/components/GerbangForm.tsx
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Divider, Box, Typography, FormControl, FormLabel } from '@mui/material';
+import { TextField, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Typography, FormControl } from '@mui/material';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { IGerbangFormProps } from './interfaces';
@@ -62,7 +62,7 @@ const Form: React.FC<IGerbangFormProps> = ({ defaultValue, onClose, onConfirm, o
       </DialogTitle>
       <Divider className='my-6'/>
       <DialogContent>
-        {formType == 'Delete' ? (
+        {formType === 'Delete' ? (
           <div className='flex justify-center items-center' style={{minHeight:'100px'}}>
           Are you sure want to delete 
           <b className='mx-2'>{defaultValue?.NamaGerbang} - {defaultValue?.NamaCabang}</b> ?
@@ -155,7 +155,7 @@ const Form: React.FC<IGerbangFormProps> = ({ defaultValue, onClose, onConfirm, o
             className='!rounded-full !py-3 !text-black !border-gray-500'
             style={{ minWidth:'120px'}}
         >
-          {formType == 'Delete' ? 'No' : 'Cancel'}
+          {formType === 'Delete' ? 'No' : 'Cancel'}
         </LoadingButton>
         <LoadingButton 
             loading={loading} 
@@ -163,9 +163,9 @@ const Form: React.FC<IGerbangFormProps> = ({ defaultValue, onClose, onConfirm, o
             variant="contained"
             disabled={loading}
             className='!rounded-full !py-3'
-            style={formType == 'Delete' ? {backgroundColor:'#FF2929', minWidth:'120px'} : {backgroundColor:'rgb(25, 118, 210)', minWidth:'120px'}}
+            style={formType === 'Delete' ? {backgroundColor:'#FF2929', minWidth:'120px'} : {backgroundColor:'rgb(25, 118, 210)', minWidth:'120px'}}
         >
-           {formType == 'Delete' ? 'Yes' : 'Submit'}
+           {formType === 'Delete' ? 'Yes' : 'Submit'}
         </LoadingButton>
       </DialogActions>
     </Dialog>

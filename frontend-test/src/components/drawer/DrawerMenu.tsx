@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Drawer, List, ListItem, ListItemIcon, ListItemText, Divider, Collapse, IconButton, Typography } from '@mui/material';
+import { Drawer, List, ListItem, ListItemIcon, ListItemText, Divider, Collapse, IconButton } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import DescriptionIcon from '@mui/icons-material/Description';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -16,10 +16,25 @@ const DrawerMenu: React.FC<{ open: boolean; onClose: () => void }> = ({ open, on
   };
 
   return (
-    <Drawer open={open} onClose={onClose} variant="persistent" className="w-64">
+    <Drawer 
+      open={open} 
+      onClose={onClose} 
+      variant="persistent" 
+      sx={{
+        width: 300, // Drawer width
+        flexShrink: 0, // Prevent shrinking
+        '& .MuiDrawer-paper': {
+          width: 300, // Apply width to the paper component
+          boxSizing: 'border-box', // Ensure the box model is correct
+          boxShadow: '0 4px 15px rgba(0, 0, 0, 0.25)', // Shadow similar to shadow-xl in Tailwind
+          borderTopRightRadius: '12px', // Top-right border radius
+          borderBottomRightRadius: '12px', // Bottom-right border radius
+        },
+      }}
+    >
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center">
-          <img src={require('../../assets/img/jasamarga-logo.png')} alt="App Logo" className="h-8 w-auto mr-2" />
+          <img src={require('../../assets/img/jasamarga-logo.png')} alt="App Logo" className="h-12 w-auto mr-2" />
         </div>
         <IconButton onClick={onClose}>
           <ArrowBackIcon />
@@ -28,7 +43,7 @@ const DrawerMenu: React.FC<{ open: boolean; onClose: () => void }> = ({ open, on
 
       <Divider />
 
-      <List className="w-64">
+      <List className="w-full">
         <ListItem button component={Link as React.ElementType} to="/">
           <ListItemIcon>
             <DashboardIcon />
@@ -37,7 +52,7 @@ const DrawerMenu: React.FC<{ open: boolean; onClose: () => void }> = ({ open, on
         </ListItem>
         <Divider />
 
-        <ListItem component="div" onClick={handleLaporanClick}>
+        <ListItem component="div" onClick={handleLaporanClick} className='cursor-pointer'>
           <ListItemIcon>
             <DescriptionIcon />
           </ListItemIcon>
@@ -46,18 +61,15 @@ const DrawerMenu: React.FC<{ open: boolean; onClose: () => void }> = ({ open, on
         </ListItem>
 
         <Collapse in={openLaporan} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding className="pl-8">
+          <List component="div" disablePadding className="!pl-16 cursor-pointer">
             <ListItem button component={Link as React.ElementType} to="/laporan/per-hari">
               <ListItemText primary="Laporan Per Hari" />
-            </ListItem>
-            <ListItem button component={Link as React.ElementType} to="/laporan/per-bulan">
-              <ListItemText primary="Laporan Per Bulan" />
             </ListItem>
           </List>
         </Collapse>
         <Divider />
 
-        <ListItem button component={Link as React.ElementType} to="/master">
+        <ListItem button component={Link as React.ElementType} to="/master-gerbang">
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>
