@@ -1,0 +1,11 @@
+.buttonActive {
+  @apply rounded-full text-white py-3;
+  background-color: rgb(25, 118, 210);
+  min-width: 150px !important;
+}
+
+.buttonInActive {
+  @apply rounded-full text-black p-3;
+  border-width: 2px !important;
+  min-width: 150px !important;
+}

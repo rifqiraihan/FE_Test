@@ -1,74 +1,120 @@
-import { CalendarToday, FileDownload, Filter, FilterAlt, KeyboardArrowDown, Search } from '@mui/icons-material';
-import { Button, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material'
-import { DataGrid, GridApi, GridColDef, GridToolbar, GridToolbarExport, useGridApiRef } from '@mui/x-data-grid';
-import { DatePicker, DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { FileDownload, FilterAlt, KeyboardArrowDown, Search } from '@mui/icons-material';
+import { Button, IconButton, InputAdornment, TextField, Tooltip, } from '@mui/material'
+import { DataGrid, GridColDef, useGridApiRef } from '@mui/x-data-grid';
+import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-
-
 import moment, { Moment } from 'moment';
-import React, { useRef, useState } from 'react'
+import { enqueueSnackbar } from 'notistack';
+import React, { useState } from 'react'
+import { getLalins } from '../../../api/lalinApi';
+import { ILalin } from '../../../interfaces/lalin';
+import './LaporanPerhari.css'
 
-interface TrafficData {
-    id: number;
-    ruas: string;
-    gerbang: string;
-    gardu: string;
-    hari: string;
-    tanggal: string;
-    metodePembayaran: string;
-    golI: number;
-    golII: number;
-    golIII: number;
-    golIV: number;
-    golV: number;
-    totalLalin: number;
-  }
-  
-
-  
-  const initialData: TrafficData[] = [
-    { id: 1, ruas: 'Ruas 1', gerbang: 'Gerbang 1', gardu: '01', hari: 'Kamis', tanggal: '30-05-2024', metodePembayaran: 'Tunai', golI: 567, golII: 234, golIII: 12, golIV: 10, golV: 8, totalLalin: 831 },
-    { id: 2, ruas: 'Ruas 1', gerbang: 'Gerbang 2', gardu: '01', hari: 'Rabu', tanggal: '29-05-2024', metodePembayaran: 'Tunai', golI: 456, golII: 345, golIII: 23, golIV: 12, golV: 9, totalLalin: 986 },
-    { id: 3, ruas: 'Ruas 1', gerbang: 'Gerbang 3', gardu: '02', hari: 'Selasa', tanggal: '28-05-2024', metodePembayaran: 'Tunai', golI: 768, golII: 345, golIII: 34, golIV: 13, golV: 7, totalLalin: 897 },
-    { id: 4, ruas: 'Ruas 2', gerbang: 'Gerbang 4', gardu: '02', hari: 'Senin', tanggal: '27-05-2024', metodePembayaran: 'Tunai', golI: 890, golII: 577, golIII: 23, golIV: 14, golV: 9, totalLalin: 987 },
-    { id: 5, ruas: 'Ruas 2', gerbang: 'Gerbang 5', gardu: '02', hari: 'Minggu', tanggal: '26-05-2024', metodePembayaran: 'Tunai', golI: 1435, golII: 1234, golIII: 34, golIV: 15, golV: 8, totalLalin: 2304 },
-    { id: 6, ruas: 'Ruas 2', gerbang: 'Gerbang 6', gardu: '03', hari: 'Sabtu', tanggal: '25-05-2024', metodePembayaran: 'Tunai', golI: 2454, golII: 1256, golIII: 12, golIV: 16, golV: 7, totalLalin: 3459 },
-  ];
 
 const LaporanPerhari = () => {
 
-const [data, setData] = useState<TrafficData[]>(initialData);
+  const [data, setData] = useState<ILalin[]>([]);
+  const [filteredData, setFilteredData] = useState<ILalin[]>([]);
   const [search, setSearch] = useState<string>('');
   const [showFilter, setShowFilter] = useState<boolean>(true);
-  const [date, setDate] = useState<Moment | null>(null);
+  const [date, setDate] = useState<Moment | null>(moment());
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [currentPaymentMethod, setCurrentPaymentMethod] = useState<string>('Keseluruhan');
+
+
   const apiRef = useGridApiRef();
 
 
-  const handleFilter = () => {
-    const filteredData = initialData.filter((item) => {
+  const fetchLalins = async () => {
+    try {
+        const formattedDate = moment(date).format('YYYY-MM-DD');
+        const response = await getLalins(formattedDate);
+        setData(response.data.rows.rows);
+        setFilteredData(response.data.rows.rows);
+    } catch (err) {
+        enqueueSnackbar('Failed to Fetch Lalins', { variant: 'error' });
+    } finally {
+        setLoading(false);
+    }
+};
+
+const handleFilter = () => {
+  const filteredData = data.filter((item) => {
       const searchTerm = search.toLowerCase();
-      const itemDate = moment(item.tanggal, 'DD-MM-YYYY');
+      const itemDate = moment(item.Tanggal);
       const matchesSearch = searchTerm === '' || 
-        item.ruas.toLowerCase().includes(searchTerm) ||
-        item.gerbang.toLowerCase().includes(searchTerm) ||
-        item.gardu.toLowerCase().includes(searchTerm) ||
-        item.hari.toLowerCase().includes(searchTerm) ||
-        item.metodePembayaran.toLowerCase().includes(searchTerm);
+          item.id.toString().includes(searchTerm) ||
+          item.IdCabang.toString().includes(searchTerm) ||
+          item.IdGerbang.toString().includes(searchTerm) ||
+          item.Tanggal.toLowerCase().includes(searchTerm) ||
+          item.Shift.toString().includes(searchTerm) ||
+          item.IdGardu.toString().includes(searchTerm) ||
+          item.Golongan.toString().includes(searchTerm) ||
+          item.IdAsalGerbang.toString().includes(searchTerm)
       const matchesDate = !date || itemDate.isSame(date, 'day');
       return matchesSearch && matchesDate;
-    });
-    setData(filteredData);
-  };
+  });
+  setFilteredData(filteredData);
+  fetchLalins()
+};
 
   const handleReset = () => {
     setSearch('');
     setDate(null);
-    setData(initialData);
+    setFilteredData(data);
   };
 
-  const handlePaymentFilter = (paymentMethod: string) => {
-    const filteredData = initialData.filter(item => item.metodePembayaran === paymentMethod);
-    setData(filteredData);
+  const handleFilterByPayment = (paymentMethod: string) => {
+    let filteredDataPayment: ILalin[] = [];
+    if (paymentMethod === 'KTP') {
+      filteredDataPayment = data.filter(item => item.DinasOpr > 0 || item.DinasMitra > 0 || item.DinasKary > 0);
+    } else if (paymentMethod === 'E-Toll') {
+      filteredDataPayment = data.filter(item => item.eMandiri > 0 || item.eBri > 0 || item.eBni > 0 || item.eBca > 0 || item.eNobu > 0 || item.eDKI > 0 || item.eMega > 0);
+    } else if (paymentMethod === 'Flo') {
+      filteredDataPayment = data.filter(item => item.eFlo > 0);
+    } else if (paymentMethod === 'E-Toll+Tunai+Flo') {
+      filteredDataPayment = data.filter(item => item.Tunai > 0 || item.eMandiri > 0 || item.eBri > 0 || item.eBni > 0 || item.eBca > 0 || item.eNobu > 0 || item.eDKI > 0 || item.eMega > 0 || item.eFlo > 0);
+    } else if (paymentMethod === 'Keseluruhan') {
+      filteredDataPayment = data;
+    } else {
+      filteredDataPayment = data.filter(item => item.Tunai > 0);
+    }
+    setCurrentPaymentMethod(paymentMethod);
+    setFilteredData(filteredDataPayment);
+  };
+
+  const getPaymentMethod = (item: ILalin): string => {
+    console.log(item)
+    if (item.DinasOpr > 0 || item.DinasMitra > 0 || item.DinasKary > 0) {
+      return 'KTP';
+    } else if (item.eMandiri > 0 || item.eBri > 0 || item.eBni > 0 || item.eBca > 0 || item.eNobu > 0 || item.eDKI > 0 || item.eMega > 0) {
+      return 'E-Toll';
+    } else if (item.eMandiri > 0 || item.eBri > 0 || item.eBni > 0 || item.eBca > 0 || item.eNobu > 0 || item.eDKI > 0 || item.eMega > 0 || item.Tunai > 0 || item.eFlo > 0) {
+      return 'E-Toll+Tunai+Flo';
+    } else if (item.eFlo > 0) {
+      return 'Flo';
+    } else if (item.Tunai > 0) {
+      return 'Tunai';
+    } else {
+      return 'Keseluruhan';
+    }
+  };
+
+  const calculateLalin = (item: ILalin, golongan: number, paymentMethod: string): number => {
+    switch (paymentMethod) {
+      case 'KTP':
+        return item.DinasOpr + item.DinasMitra + item.DinasKary;
+      case 'E-Toll':
+        return item.eMandiri + item.eBri + item.eBni + item.eBca + item.eNobu + item.eDKI + item.eMega;
+      case 'Flo':
+        return item.eFlo;
+      case 'Tunai':
+        return item.Tunai;
+      case 'E-Toll+Tunai+Flo':
+        return item.Tunai + item.eMandiri + item.eBri + item.eBni + item.eBca + item.eNobu + item.eDKI + item.eMega + item.eFlo;
+      default:
+        return item.Tunai + item.DinasOpr + item.DinasMitra + item.DinasKary + item.eMandiri + item.eBri + item.eBni + item.eBca + item.eNobu + item.eDKI + item.eMega + item.eFlo;
+    }
   };
 
   const handleExport = () => {
@@ -78,20 +124,46 @@ const [data, setData] = useState<TrafficData[]>(initialData);
   };
 
   const columns: GridColDef[] = [
-    { field: 'id', headerName: 'No.', width: 70 },
-    { field: 'ruas', headerName: 'Ruas', width: 130 },
-    { field: 'gerbang', headerName: 'Gerbang', width: 130 },
-    { field: 'gardu', headerName: 'Gardu', width: 130 },
-    { field: 'hari', headerName: 'Hari', width: 130 },
-    { field: 'tanggal', headerName: 'Tanggal', width: 130 },
-    { field: 'metodePembayaran', headerName: 'Metode Pembayaran', width: 180 },
-    { field: 'golI', headerName: 'Gol I', width: 100 },
-    { field: 'golII', headerName: 'Gol II', width: 100 },
-    { field: 'golIII', headerName: 'Gol III', width: 100 },
-    { field: 'golIV', headerName: 'Gol IV', width: 100 },
-    { field: 'golV', headerName: 'Gol V', width: 100 },
-    { field: 'totalLalin', headerName: 'Total Lalin', width: 130 },
+    { field: 'id', headerName: 'No.', width: 90 },
+    { field: 'ruas', headerName: 'Ruas', width: 150 },
+    { field: 'gerbang', headerName: 'Gerbang', width: 150 },
+    { field: 'gardu', headerName: 'Gardu', width: 110 },
+    { field: 'hari', headerName: 'Hari', width: 110 },
+    { field: 'tanggal', headerName: 'Tanggal', width: 150 },
+    { field: 'metodePembayaran', headerName: 'Metode Pembayaran', width: 150 },
+    { field: 'golI', headerName: 'Gol I', width: 110 },
+    { field: 'golII', headerName: 'Gol II', width: 110 },
+    { field: 'golIII', headerName: 'Gol III', width: 110 },
+    { field: 'golIV', headerName: 'Gol IV', width: 110 },
+    { field: 'golV', headerName: 'Gol V', width: 110 },
+    { field: 'totalLalin', headerName: 'Total Lalin', width: 150 },
   ];
+
+
+const transformedData = filteredData.map((item, index) => {
+  const paymentMethod = currentPaymentMethod === 'Keseluruhan' ? getPaymentMethod(item) : currentPaymentMethod;
+  return {
+    id: index + 1,
+    ruas: `Ruas ${item.IdCabang}`,
+    gerbang: `Gerbang ${item.IdGerbang}`,
+    gardu: item.IdGardu.toString().padStart(2, '0'),
+    hari: new Date(item.Tanggal).toLocaleDateString('id-ID', { weekday: 'long' }),
+    tanggal: new Date(item.Tanggal).toLocaleDateString('id-ID'),
+    metodePembayaran: currentPaymentMethod,
+    golI: calculateLalin(item, 1, paymentMethod),
+    golII: calculateLalin(item, 2, paymentMethod),
+    golIII: calculateLalin(item, 3, paymentMethod),
+    golIV: calculateLalin(item, 4, paymentMethod),
+    golV: calculateLalin(item, 5, paymentMethod),
+    totalLalin: calculateLalin(item, 1, paymentMethod) + calculateLalin(item, 2, paymentMethod) + calculateLalin(item, 3, paymentMethod) + calculateLalin(item, 4, paymentMethod) + calculateLalin(item, 5, paymentMethod),
+  };
+});
+
+
+
+  React.useEffect(() => {
+    fetchLalins();
+}, []);
 
   
   return (
@@ -107,7 +179,7 @@ const [data, setData] = useState<TrafficData[]>(initialData);
             </IconButton>
             </Tooltip>
           </div>
-          <div className="flex space-x-4 mb-2 w-1/2">
+          <div className="flex flex-col md:flex-row gap-4 mb-4 w-full md:w-1/2">
           <TextField
                 placeholder="Search"
                 value={search}
@@ -126,7 +198,7 @@ const [data, setData] = useState<TrafficData[]>(initialData);
                   ),
                 }}
               />
-            <div className=" w-full">
+            <div className="w-full">
               <LocalizationProvider dateAdapter={AdapterMoment}>
                 <DesktopDatePicker
                   value={date}
@@ -171,44 +243,145 @@ const [data, setData] = useState<TrafficData[]>(initialData);
               Show Filter
             </Button>
         )}
-        <div className="mb-6">
-          <div className="flex space-x-4 overflow-x-auto">
-            <Button variant="contained" onClick={() => handlePaymentFilter('Tunai')}>
-              Total Tunai
-            </Button>
-            <Button variant="contained" onClick={() => handlePaymentFilter('E-Toll')}>
-              Total E-Toll
-            </Button>
-            <Button variant="contained" onClick={() => handlePaymentFilter('Flo')}>
-              Total Flo
-            </Button>
-            <Button variant="contained" onClick={() => handlePaymentFilter('KTP')}>
-              Total KTP
-            </Button>
-            <Button variant="contained" onClick={() => handlePaymentFilter('Keseluruhan')}>
-              Total Keseluruhan
-            </Button>
-            <Button variant="contained" onClick={() => handlePaymentFilter('E-Toll+Tunai+Flo')}>
-              Total E-Toll+Tunai+Flo
-            </Button>
-            <Button variant="contained" color="primary" onClick={handleExport} startIcon={<FileDownload />}>
+         
+        <div className="my-6">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', justifyItems: 'end', marginTop: '20px',  marginBottom: '20px' }}>
+            <Button 
+              variant="contained"
+              className="!p-3 !rounded-full hover:!bg-blue-500"
+              style={{backgroundColor:'rgb(25, 118, 210)', minWidth:'120px'}}
+              onClick={handleExport} 
+              startIcon={<FileDownload />}
+            >
               Export
             </Button>
+          </div>
+          <div className="flex flex-row gap-4 overflow-x-auto border-2 rounded-full p-2 max-w-fit">
+          <Button
+            style={{
+              borderRadius: '9999px',
+              color: currentPaymentMethod === 'Tunai' ? 'white' : 'black',
+              backgroundColor: currentPaymentMethod === 'Tunai' ? '#3b82f6' : 'transparent',
+              padding: '12px',
+              minWidth: '150px',
+              borderWidth: currentPaymentMethod === 'Tunai' ? '0px' : '2px',
+              border:'2px solid grey',
+              borderColor: 'black',
+            }}
+            onClick={() => handleFilterByPayment('Tunai')}
+          >
+            Total Tunai
+          </Button>
+
+          <Button
+            style={{
+              borderRadius: '9999px',
+              color: currentPaymentMethod === 'E-Toll' ? 'white' : 'black',
+              backgroundColor: currentPaymentMethod === 'E-Toll' ? '#3b82f6' : 'transparent',
+              padding: '12px',
+              minWidth: '150px',
+              borderWidth: currentPaymentMethod === 'E-Toll' ? '0px' : '2px',
+              borderColor: 'black',
+              border:'2px solid grey',
+            }}
+            onClick={() => handleFilterByPayment('E-Toll')}
+          >
+            Total E-Toll
+          </Button>
+
+          <Button
+            style={{
+              borderRadius: '9999px',
+              color: currentPaymentMethod === 'Flo' ? 'white' : 'black',
+              backgroundColor: currentPaymentMethod === 'Flo' ? '#3b82f6' : 'transparent',
+              padding: '12px',
+              minWidth: '150px',
+              borderWidth: currentPaymentMethod === 'Flo' ? '0px' : '2px',
+              borderColor: 'black',
+              border:'2px solid grey',
+            }}
+            onClick={() => handleFilterByPayment('Flo')}
+          >
+            Total Flo
+          </Button>
+
+          <Button
+            style={{
+              borderRadius: '9999px',
+              color: currentPaymentMethod === 'KTP' ? 'white' : 'black',
+              backgroundColor: currentPaymentMethod === 'KTP' ? '#3b82f6' : 'transparent',
+              padding: '12px',
+              minWidth: '150px',
+              borderWidth: currentPaymentMethod === 'KTP' ? '0px' : '2px',
+              borderColor: 'black',
+              border:'2px solid grey',
+            }}
+            onClick={() => handleFilterByPayment('KTP')}
+          >
+            Total KTP
+          </Button>
+
+          <Button
+            style={{
+              borderRadius: '9999px',
+              color: currentPaymentMethod === 'Keseluruhan' ? 'white' : 'black',
+              backgroundColor: currentPaymentMethod === 'Keseluruhan' ? '#3b82f6' : 'transparent',
+              padding: '12px',
+              minWidth: '150px',
+              borderWidth: currentPaymentMethod === 'Keseluruhan' ? '0px' : '2px',
+              borderColor: 'black',
+              border:'2px solid grey',
+            }}
+            onClick={() => handleFilterByPayment('Keseluruhan')}
+          >
+            Total Keseluruhan
+          </Button>
+
+          <Button
+            style={{
+              borderRadius: '9999px',
+              color: currentPaymentMethod === 'E-Toll+Tunai+Flo' ? 'white' : 'black',
+              backgroundColor: currentPaymentMethod === 'E-Toll+Tunai+Flo' ? '#3b82f6' : 'transparent',
+              padding: '12px',
+              minWidth: '150px',
+              borderWidth: currentPaymentMethod === 'E-Toll+Tunai+Flo' ? '0px' : '2px',
+              borderColor: 'black',
+              border:'2px solid grey',
+            }}
+            onClick={() => handleFilterByPayment('E-Toll+Tunai+Flo')}
+          >
+            Total E-Toll+Tunai+Flo
+          </Button>
+
+           
           </div>
         </div>
         <div className="overflow-x-auto">
         <DataGrid
-            rows={data}
+            rows={transformedData}
             columns={columns}
-            checkboxSelection
             autoHeight
             apiRef={apiRef}
+            loading={loading}
             initialState={{
                 pagination: {
                 paginationModel: { pageSize: 5, page: 0 },
                 },
             }}
-            pageSizeOptions={[5, 10, 20]} // Updated prop
+            sx={{
+              borderRadius: '15px',
+              '& .MuiDataGrid-container--top [role="row"], & .MuiDataGrid-container--bottom [role="row"]': {
+                backgroundColor: '#E6E6E8',
+                fontWeight: 'bold !important',
+                fontSize: '14px',
+              },
+              '& .MuiDataGrid-columnHeaders .MuiDataGrid-columnHeader': {
+                fontWeight: 'bold !important',
+                fontSize: '14px !important',  
+                textTransform: 'uppercase', 
+              },
+            }}
+            pageSizeOptions={[5, 10, 20]}
             />
         </div>
       </div>

@@ -1,7 +1,6 @@
 import { Add, Search } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Button, InputAdornment, makeStyles, TextField, Typography } from '@mui/material'
-import axios from 'axios';
+import { InputAdornment, TextField } from '@mui/material'
 import { enqueueSnackbar } from 'notistack';
 import React from 'react'
 import { createGerbang, deleteGerbang, editGerbang, getAllGerbangs } from '../../api/gerbangApi';
@@ -12,7 +11,6 @@ import Form from './components/form/Form';
 const MasterData = () => {
 
   const [data, setData] = React.useState<IGerbang[]>([]);
-  const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [selectedData, setSelectedData] = React.useState<IGerbang | null>(null);
   const [open, setOpen] = React.useState(false);
@@ -60,7 +58,7 @@ const MasterData = () => {
       setData(data.data.rows.rows); 
       setFilteredData(data.data.rows.rows); 
     } catch (err) {
-      setError('Failed to fetch gerbangs');
+      enqueueSnackbar('Failed to Fetch Gerbangs', { variant: 'error' });
     } finally {
       setLoading(false);
     }
