@@ -43,6 +43,14 @@ const Login: React.FC = () => {
       }
   };
 
+  React.useEffect(() => {      
+    const token = localStorage.getItem('token');
+      if (token) {
+            navigate("/");
+        }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
 <div className="flex h-screen">
       {/* Left side: Login form */}

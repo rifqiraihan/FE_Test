@@ -9,7 +9,6 @@ import MasterGerbang from './pages/master-gerbang/MasterGerbang';
 import { enqueueSnackbar } from 'notistack';
 
 
-
 const App: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -17,9 +16,6 @@ const App: React.FC = () => {
 
   React.useEffect(() => {
     const currentPath = window.location.pathname;
-
-    console.log('Current Path:', currentPath);
-
       
     const token = localStorage.getItem('token');
     if (currentPath !== '/login'){

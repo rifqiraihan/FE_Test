@@ -40,7 +40,7 @@ const Dashboard = () => {
     KTP: 0
   });
 
-  const fetchLalins = async () => {
+  const fetchLalins = React.useCallback(async () => {
     try {
       const formattedDate = moment(date).format('YYYY-MM-DD');
       const response = await getLalins(formattedDate);
@@ -50,7 +50,7 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [date]);
 
   const handleFilter = () => {
     fetchLalins()
@@ -168,16 +168,12 @@ const Dashboard = () => {
   React.useEffect(() => {
     setPaymentMethodData(updatedPaymentMethodData);
     setPaymentMethodDataBar(updatedPaymentMethodDataBar);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   React.useEffect(() => {
     fetchLalins();
-
-    const token = localStorage.getItem('token');
-    if (!token) {
-      enqueueSnackbar('Please Login First', { variant: 'error' });
-      window.location.href = '/login';
-    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 

@@ -9,9 +9,19 @@ import React, { useState } from 'react'
 import { getLalins } from '../../../api/lalinApi';
 import { ILalin } from '../../../interfaces/lalin';
 import { LoadingButton } from '@mui/lab';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 
 import './LaporanPerhari.css'
 
+interface TotalRow {
+  ruas: string;
+  golI: number;
+  golII: number;
+  golIII: number;
+  golIV: number;
+  golV: number;
+  totalLalin: number;
+}
 
 const LaporanPerhari = () => {
 
@@ -126,19 +136,19 @@ const handleFilter = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: 'id', headerName: 'No.', width: 90 },
-    { field: 'ruas', headerName: 'Ruas', width: 150 },
-    { field: 'gerbang', headerName: 'Gerbang', width: 150 },
-    { field: 'gardu', headerName: 'Gardu', width: 110 },
-    { field: 'hari', headerName: 'Hari', width: 110 },
-    { field: 'tanggal', headerName: 'Tanggal', width: 150 },
-    { field: 'metodePembayaran', headerName: 'Metode Pembayaran', width: 150 },
-    { field: 'golI', headerName: 'Gol I', width: 110 },
-    { field: 'golII', headerName: 'Gol II', width: 110 },
-    { field: 'golIII', headerName: 'Gol III', width: 110 },
-    { field: 'golIV', headerName: 'Gol IV', width: 110 },
-    { field: 'golV', headerName: 'Gol V', width: 110 },
-    { field: 'totalLalin', headerName: 'Total Lalin', width: 150 },
+    { field: 'id', headerName: 'No.', minWidth: 90, flex:1 },
+    { field: 'ruas', headerName: 'Ruas', minWidth: 150, flex:1 },
+    { field: 'gerbang', headerName: 'Gerbang', minWidth: 150, flex:1 },
+    { field: 'gardu', headerName: 'Gardu', minWidth: 110, flex:1 },
+    { field: 'hari', headerName: 'Hari', minWidth: 110, flex:1 },
+    { field: 'tanggal', headerName: 'Tanggal', minWidth: 150, flex:1 },
+    { field: 'metodePembayaran', headerName: 'Metode Pembayaran', minWidth: 250, flex:1 },
+    { field: 'golI', headerName: 'Gol I', minWidth: 110, flex:1 },
+    { field: 'golII', headerName: 'Gol II', minWidth: 110, flex:1 },
+    { field: 'golIII', headerName: 'Gol III', minWidth: 110, flex:1 },
+    { field: 'golIV', headerName: 'Gol IV', minWidth: 110, flex:1 },
+    { field: 'golV', headerName: 'Gol V', minWidth: 110, flex:1 },
+    { field: 'totalLalin', headerName: 'Total Lalin', minWidth: 150, flex:1 },
   ];
 
 
@@ -161,10 +171,41 @@ const transformedData = filteredData.map((item, index) => {
   };
 });
 
+ const groupedData = transformedData.reduce((acc: Record<string, TotalRow>, item) => {
+  if (!acc[item.ruas]) {
+    acc[item.ruas] = {
+      ruas: item.ruas,
+      golI: 0,
+      golII: 0,
+      golIII: 0,
+      golIV: 0,
+      golV: 0,
+      totalLalin: 0,
+    };
+  }
+  acc[item.ruas].golI += item.golI;
+  acc[item.ruas].golII += item.golII;
+  acc[item.ruas].golIII += item.golIII;
+  acc[item.ruas].golIV += item.golIV;
+  acc[item.ruas].golV += item.golV;
+  acc[item.ruas].totalLalin += item.totalLalin;
+  return acc;
+}, {});
 
+  const totalRows = Object.values(groupedData);
+  const totalLalinRuasKeseluruhan = totalRows.reduce((sum, row) => sum + row.totalLalin, 0);
+
+  const totalGolI = totalRows.reduce((sum, row) => sum + row.golI, 0);
+  const totalGolII = totalRows.reduce((sum, row) => sum + row.golII, 0);
+  const totalGolIII = totalRows.reduce((sum, row) => sum + row.golIII, 0);
+  const totalGolIV = totalRows.reduce((sum, row) => sum + row.golIV, 0);
+  const totalGolV = totalRows.reduce((sum, row) => sum + row.golV, 0);
+
+  
 
 React.useEffect(() => {
   fetchLalins();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
 }, []);
 
   
@@ -264,7 +305,7 @@ React.useEffect(() => {
           </div>
           )}
 
-        {filteredData.length > 0 && (
+        {data.length > 0 && (
           <div className="flex flex-row gap-4 overflow-x-auto border-2 rounded-full p-2 max-w-fit">
           <Button
             style={{
@@ -394,6 +435,46 @@ React.useEffect(() => {
             pageSizeOptions={[5, 10, 20]}
             />
         </div>
+        <Typography sx={{ marginBottom: 2, paddingLeft: 2, marginTop:3, fontWeight:'bold' }}>
+          Total Summary
+        </Typography>
+        <TableContainer sx={{ borderRadius: '12px', border: '1px solid', borderColor:'#E6E6E8', marginTop:2 }}>
+        <Table sx={{ borderRadius: '12px', overflow: 'hidden', }}>
+        <TableHead sx={{ backgroundColor: '#E6E6E8' }}>
+          <TableRow>
+            <TableCell>Total Lalin Ruas</TableCell>
+            <TableCell>Gol I</TableCell>
+            <TableCell>Gol II</TableCell>
+            <TableCell>Gol III</TableCell>
+            <TableCell>Gol IV</TableCell>
+            <TableCell>Gol V</TableCell>
+            <TableCell>Total Lalin</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {totalRows.map((row) => (
+            <TableRow key={row.ruas}>
+              <TableCell>Total Lalin {row.ruas}</TableCell>
+              <TableCell>{row.golI}</TableCell>
+              <TableCell>{row.golII}</TableCell>
+              <TableCell>{row.golIII}</TableCell>
+              <TableCell>{row.golIV}</TableCell>
+              <TableCell>{row.golV}</TableCell>
+              <TableCell>{row.totalLalin}</TableCell>
+            </TableRow>
+          ))}
+          <TableRow>
+            <TableCell><strong>Total Lalin Ruas Keseluruhan</strong></TableCell>
+            <TableCell><strong>{totalGolI}</strong></TableCell>
+            <TableCell><strong>{totalGolII}</strong></TableCell>
+            <TableCell><strong>{totalGolIII}</strong></TableCell>
+            <TableCell><strong>{totalGolIV}</strong></TableCell>
+            <TableCell><strong>{totalGolV}</strong></TableCell>
+            <TableCell><strong>{totalLalinRuasKeseluruhan}</strong></TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+      </TableContainer>
       </div>
   )
 }

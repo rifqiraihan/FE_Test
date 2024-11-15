@@ -13,9 +13,9 @@ import { Delete, Edit, RemoveRedEye } from '@mui/icons-material';
 
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'No', width: 150 },
-    { field: 'IdCabang', headerName: 'Id Cabang', width: 150 },
-    { field: 'NamaGerbang', headerName: 'Gerbang Name', flex:1, minWidth: 180 },
-    { field: 'NamaCabang', headerName: 'Cabang Name', flex:1, minWidth: 180 },
+    // { field: 'IdCabang', headerName: 'Ruas', width: 150 },
+    { field: 'NamaCabang', headerName: 'Ruas', flex:1, minWidth: 180 },
+    { field: 'NamaGerbang', headerName: 'Gerbang', flex:1, minWidth: 180 },
     {
       field: 'actions',
       headerName: 'Actions',
