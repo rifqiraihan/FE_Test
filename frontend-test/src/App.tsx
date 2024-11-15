@@ -13,6 +13,8 @@ import { enqueueSnackbar } from 'notistack';
 const App: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  
+
   React.useEffect(() => {
     const currentPath = window.location.pathname;
 
@@ -26,7 +28,6 @@ const App: React.FC = () => {
         window.location.href = '/login';
       }
   }
-
 
   }, []);
 
